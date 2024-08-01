@@ -8,11 +8,24 @@ templ base() {
 		<head>
 			<title>Leet Tutor</title>
 			<script src="https://unpkg.com/htmx.org@2.0.1"></script>
+			<script src="https://cdn.tailwindcss.com"></script>
 			<script type="text/javascript" src="https://livejs.com/live.js"></script>
 			<script>
+    tailwind.config = {
+      theme: {
+        spacing: {
+          '1': '1rem',
+          '2': '2rem',
+          '3': '3rem',
+          '4': '4rem',
+          '5': '5rem',
+          '6': '6rem',
+        }
+      }
+    }
   </script>
 		</head>
-		<body>
+		<body class="bg-sky-50">
 			@components.Navbar()
 			<div id="page-content">
 				{ children... }
