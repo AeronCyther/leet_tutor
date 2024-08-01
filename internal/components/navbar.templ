@@ -1,8 +1,25 @@
 package components
 
 templ Navbar() {
-	<nav>
-		<button hx-get="/fragment/home" hx-target="#page-content" hx-swap="innerHTML">Home</button>
-		<button hx-get="/fragment/about" hx-target="#page-content" hx-swap="innerHTML">About</button>
+	<nav class="flex">
+		<button class="m-1 text-2xl" hx-get="/fragment/home" hx-target="#page-content" hx-swap="innerHTML">
+			Leet
+			Tutor
+		</button>
+		<span class="grow"></span>
+		<button
+			class="m-1"
+			hx-get="/fragment/home"
+			hx-target="#page-content"
+			hx-swap="innerHTML"
+			hx-push-url="/"
+		>Home</button>
+		<button
+			class="m-1 mr-2"
+			hx-get="/fragment/about"
+			hx-target="#page-content"
+			hx-swap="innerHTML"
+			hx-push-url="/about"
+		>About</button>
 	</nav>
 }
