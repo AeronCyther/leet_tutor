@@ -1,0 +1,8 @@
+package components
+
+templ Navbar() {
+	<nav>
+		<button hx-get="/fragment/home" hx-target="#page-content" hx-swap="innerHTML">Home</button>
+		<button hx-get="/fragment/about" hx-target="#page-content" hx-swap="innerHTML">About</button>
+	</nav>
+}

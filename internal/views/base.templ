@@ -1,0 +1,22 @@
+package views
+
+import "github.com/AeronCyther/leet_tutor/internal/components"
+
+templ base() {
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Leet Tutor</title>
+  <script src="https://unpkg.com/htmx.org@2.0.1"></script>
+</head>
+
+<body>
+  @components.Navbar()
+  <div id="page-content">
+    { children... }
+  </div>
+</body>
+
+</html>
+}
