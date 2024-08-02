@@ -1,5 +1,7 @@
 package views
 
+import "github.com/AeronCyther/leet_tutor/internal/components"
+
 templ Home() {
 	@base() {
 		@HomeFragment()
@@ -7,5 +9,7 @@ templ Home() {
 }
 
 templ HomeFragment() {
-	<p>home</p>
+	@components.Card() {
+		<h1 class="text-center text-3xl">Hello there!</h1>
+	}
 }

@@ -25,9 +25,9 @@ templ base() {
     }
   </script>
 		</head>
-		<body class="bg-sky-50">
+		<body class="bg-sky-100 flex flex-col min-h-screen items-center">
 			@components.Navbar()
-			<div id="page-content">
+			<div id="page-content" class="flex flex-col flex-grow max-w-3xl m-1">
 				{ children... }
 			</div>
 		</body>

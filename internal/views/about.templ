@@ -1,5 +1,7 @@
 package views
 
+import "github.com/AeronCyther/leet_tutor/internal/components"
+
 templ About() {
 	@base() {
 		@AboutFragment()
@@ -7,5 +9,7 @@ templ About() {
 }
 
 templ AboutFragment() {
-	<p>about page</p>
+	@components.Card() {
+		<h1 class="text-center text-3xl">About</h1>
+	}
 }
