@@ -3,40 +3,199 @@ package views
 import (
 	"github.com/AeronCyther/leet_tutor/internal/components"
 	"github.com/AeronCyther/leet_tutor/internal/problem"
+	"github.com/AeronCyther/leet_tutor/internal/search"
 	"strconv"
+	"strings"
 )
 
-templ ProblemList(problems []*problem.Problem, currentPage int, totalPages int, baseUrl string) {
+templ ProblemList(problems []*problem.Problem, currentPage int, totalPages int, searchParams *search.Params, baseUrl string) {
 	@base() {
-		@ProblemListFragment(problems, currentPage, totalPages, baseUrl)
+		@ProblemListFragment(problems, currentPage, totalPages, searchParams, baseUrl)
 	}
 }
 
-templ ProblemListFragment(problems []*problem.Problem, currentPage int, totalPages int, baseUrl string) {
-	<h1 class="text-2xl mb-1">Page { strconv.Itoa(currentPage + 1) } of { strconv.Itoa(totalPages) }</h1>
-	<div class="flex flex-col gap-1">
-		for _, p := range problems {
-			<a
-				class="cursor-pointer"
-				hx-get={ string(templ.URL("/fragment" + baseUrl + "/" + p.ID)) }
-				hx-target="#page-content"
-				hx-swap="innerHTML"
-				hx-push-url={ string(templ.URL(baseUrl + "/" + p.ID)) }
-			>
-				@components.Card() {
-					<h1 class="text-2xl mb-[0.5rem]">{ p.Title }</h1>
-					@components.DifficultyTag(p.Difficulty)
-					<div class="mt-1 max-h-5 overflow-hidden relative">
-						for _, content := range p.Body.Content {
-							<p>
-								{ content }
-							</p>
-						}
-						<div class="bg-gradient-to-t from-slate-50 to-transparent to-80% w-full h-full absolute block top-[0]"></div>
-					</div>
+templ ProblemListFragment(problems []*problem.Problem, currentPage int, totalPages int, searchParams *search.Params, baseUrl string) {
+	@templ.JSONScript("base-url", baseUrl)
+	<div class="flex gap-[0.5rem] w-full">
+		<span class="relative flex grow bg-slate-50 rounded-md">
+			<input
+				id="search-bar"
+				class="grow text-md mx-1 bg-transparent focus:outline-none"
+				if len(searchParams.Query) > 0 {
+					value={ searchParams.Query }
 				}
-			</a>
-		}
+			/>
+			<div id="difficulty-filter-dropdown-toggle" class="flex items-center mx-1 gap-[0.25rem] cursor-pointer select-none">
+				<label id="selected-difficulties">
+					if len(searchParams.Difficulty) > 0 {
+						{ searchParams.Difficulty }
+					} else {
+						None
+					}
+				</label>
+				@components.DropdownIcon()
+			</div>
+			<div id="difficulty-filter-dropdown" class="absolute hidden top-full right-[0] select-none">
+				<div class="mt-[0.25rem]">
+					@components.Card() {
+						<p>
+							<input
+								type="checkbox"
+								id="easy-difficulty-checkbox"
+								if strings.Contains(searchParams.Difficulty, "Easy") {
+									checked
+								}
+							/>
+							<label>
+								Easy
+							</label>
+						</p>
+						<p>
+							<input
+								type="checkbox"
+								id="medium-difficulty-checkbox"
+								if strings.Contains(searchParams.Difficulty, "Medium") {
+									checked
+								}
+							/>
+							<label>
+								Medium
+							</label>
+						</p>
+						<p>
+							<input
+								type="checkbox"
+								id="hard-difficulty-checkbox"
+								if strings.Contains(searchParams.Difficulty, "Hard") {
+									checked
+								}
+							/>
+							<label>
+								Hard
+							</label>
+						</p>
+					}
+				</div>
+			</div>
+		</span>
+		<button
+			id="search-button"
+			class="bg-sky-400 p-[0.5rem] rounded-md"
+			type="button"
+			hx-target="#page-content"
+			hx-swap="innerHTML"
+			hx-trigger="click delay:1ms"
+		>
+			@components.SearchIcon()
+		</button>
 	</div>
-	@components.Pagination(currentPage, totalPages, baseUrl)
+	if totalPages > 0 {
+		<h1 class="text-2xl my-1">Page { strconv.Itoa(currentPage + 1) } of { strconv.Itoa(totalPages) }</h1>
+		<div class="flex flex-col gap-1">
+			for _, p := range problems {
+				<a
+					class="cursor-pointer"
+					hx-get={ string(templ.URL("/fragment" + baseUrl + "/" + p.ID)) }
+					hx-target="#page-content"
+					hx-swap="innerHTML"
+					hx-push-url={ string(templ.URL(baseUrl + "/" + p.ID)) }
+				>
+					@components.Card() {
+						<h1 class="text-2xl mb-[0.5rem]">{ p.Title }</h1>
+						@components.DifficultyTag(p.Difficulty)
+						<div class="mt-1 max-h-5 overflow-hidden relative">
+							for _, content := range p.Body.Content {
+								<p>
+									{ content }
+								</p>
+							}
+							<div class="bg-gradient-to-t from-slate-50 to-transparent to-80% w-full h-full absolute block top-[0]"></div>
+						</div>
+					}
+				</a>
+			}
+		</div>
+	} else {
+		<h1 class="text-2xl text-center my-1">No Results found</h1>
+	}
+	<script>
+    (() => {
+      const BASE_URL = JSON.parse(document.getElementById("base-url").textContent);
+      function toggleDifficultyFilterDropdown() {
+        const dropdown =document.getElementById("difficulty-filter-dropdown");
+        if (dropdown.classList.contains("hidden")){
+          dropdown.classList.remove("hidden");
+        }else{
+            dropdown.classList.add("hidden");
+        }
+      }
+
+      function createSelectedDifficultyArray() {
+        const isEasyChecked=document.getElementById("easy-difficulty-checkbox").checked;
+        const isMediumChecked=document.getElementById("medium-difficulty-checkbox").checked;
+        const isHardChecked=document.getElementById("hard-difficulty-checkbox").checked;
+        
+        let selectedDifficulties = [];
+
+        if (isEasyChecked){
+          selectedDifficulties.push("Easy");
+        }
+        if (isMediumChecked){
+          selectedDifficulties.push("Medium");
+        }
+        if (isHardChecked){
+          selectedDifficulties.push("Hard");
+        }
+
+        return selectedDifficulties;
+      }
+
+      function updateSearchParams() {
+        let queryParams = "";
+        const selectedDifficulties = createSelectedDifficultyArray();
+        if (selectedDifficulties.length > 0 && selectedDifficulties.length < 3){
+          queryParams = `difficulty=${selectedDifficulties.join(",")}`;
+        }
+        let queryString = document.getElementById("search-bar").value;
+        if (queryString.length > 0){
+          if (queryParams.length > 0){
+            queryParams += "&";
+          }
+          queryParams += `q=${queryString}`;
+        }
+        if (queryParams.length > 0){
+          queryParams = "?" + queryParams;
+        }
+        const searchButton = document.getElementById("search-button");
+        searchButton.setAttribute("hx-get", `/fragment${BASE_URL}${queryParams}`);
+        searchButton.setAttribute("hx-push-url", `${BASE_URL}${queryParams}`);
+        htmx.process(searchButton);
+      }
+
+      function refreshDifficulty() {
+        const selectedDifficulties = createSelectedDifficultyArray();
+        let difficultyString = selectedDifficulties.join(",");
+
+        if (selectedDifficulties.length == 0){
+            difficultyString = "None";
+        }else if (selectedDifficulties.length == 3){
+            difficultyString = "All";
+        }
+        document.getElementById("selected-difficulties").innerText=difficultyString;
+        updateSearchParams();
+      }
+
+      function getSearchQuery() {
+        return document.getElementById("search-bar").value;
+      }
+
+      document.getElementById("difficulty-filter-dropdown-toggle").onclick=toggleDifficultyFilterDropdown;
+      document.getElementById("easy-difficulty-checkbox").onclick=refreshDifficulty;
+      document.getElementById("medium-difficulty-checkbox").onclick=refreshDifficulty;
+      document.getElementById("hard-difficulty-checkbox").onclick=refreshDifficulty;
+      document.getElementById("search-bar").onchange=updateSearchParams;
+      updateSearchParams();
+    })()
+  </script>
+	@components.Pagination(currentPage, totalPages, searchParams, baseUrl)
 }

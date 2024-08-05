@@ -1,6 +1,9 @@
 package components
 
-import "strconv"
+import (
+	"github.com/AeronCyther/leet_tutor/internal/search"
+	"strconv"
+)
 
 func generatePageRange(currentPage int, totalPages int) []int {
 	start := max(0, currentPage-2)
@@ -15,24 +18,35 @@ func generatePageRange(currentPage int, totalPages int) []int {
 	return pageRange
 }
 
-templ Pagination(currentPage int, totalPages int, baseUrl string) {
+func generatePageURL(baseurl string, page int, searchParams *search.Params) string {
+	url := baseurl + "?p=" + strconv.Itoa(page)
+	if len(searchParams.Query) > 0 {
+		url += "&q=" + searchParams.Query
+	}
+	if len(searchParams.Difficulty) > 0 {
+		url += "&difficulty=" + searchParams.Difficulty
+	}
+	return url
+}
+
+templ Pagination(currentPage int, totalPages int, searchParams *search.Params, baseUrl string) {
 	<div class="flex w-full justify-center gap-1 mt-1">
 		if currentPage > 0 {
 			<a
 				class="cursor-pointer"
-				hx-get={ string(templ.URL("/fragment" + baseUrl + "?p=0")) }
+				hx-get={ string(templ.URL(generatePageURL("/fragment"+baseUrl, 0, searchParams))) }
 				hx-target="#page-content"
 				hx-swap="innerHTML"
-				hx-push-url={ string(templ.URL(baseUrl + "?p=0")) }
+				hx-push-url={ string(templ.URL(generatePageURL(baseUrl, 0, searchParams))) }
 			>First</a>
 		}
 		for _, i := range generatePageRange(currentPage, totalPages) {
 			<a
 				class={ "cursor-pointer", templ.KV("underline", i == currentPage) }
-				hx-get={ string(templ.URL("/fragment" + baseUrl + "?p=" + strconv.Itoa(i))) }
+				hx-get={ string(templ.URL(generatePageURL("/fragment"+baseUrl, i, searchParams))) }
 				hx-target="#page-content"
 				hx-swap="innerHTML"
-				hx-push-url={ string(templ.URL(baseUrl + "?p=" + strconv.Itoa(i))) }
+				hx-push-url={ string(templ.URL(generatePageURL(baseUrl, i, searchParams))) }
 			>
 				{ 
     strconv.Itoa(i + 1) }
@@ -41,11 +55,10 @@ templ Pagination(currentPage int, totalPages int, baseUrl string) {
 		if (currentPage < totalPages - 1) {
 			<a
 				class="cursor-pointer"
-				hx-get={ string(templ.URL("/fragment" + baseUrl + "?p=" + strconv.Itoa(totalPages-1))) }
+				hx-get={ string(templ.URL(generatePageURL("/fragment"+baseUrl, totalPages-1, searchParams))) }
 				hx-target="#page-content"
 				hx-swap="innerHTML"
-				hx-push-url={ string(templ.URL(baseUrl + "?p=" +
-    strconv.Itoa(totalPages-1))) }
+				hx-push-url={ string(templ.URL(generatePageURL(baseUrl, totalPages-1, searchParams))) }
 			>Last</a>
 		}
 	</div>

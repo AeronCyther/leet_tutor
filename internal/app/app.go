@@ -7,6 +7,7 @@ import (
 
 	"github.com/AeronCyther/leet_tutor/internal/config"
 	"github.com/AeronCyther/leet_tutor/internal/problem"
+	"github.com/AeronCyther/leet_tutor/internal/search"
 	"github.com/AeronCyther/leet_tutor/internal/views"
 	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
@@ -49,23 +50,23 @@ func Init() *fiber.App {
 	})
 
 	app.Get("/problem", func(c fiber.Ctx) error {
-		totalPages, currentPage, offset, numProblemsInPage := determineProblemPaginationParams(c)
-		problems := problem.ProblemSlice[offset : offset+numProblemsInPage]
+		totalPages, currentPage, searchParams, problems := determineProblemPaginationParams(c)
 		return RenderComponent(c, views.ProblemList(
 			problems,
 			currentPage,
 			totalPages,
+			searchParams,
 			string(c.Request().URI().Path()),
 		))
 	})
 
 	app.Get("/fragment/problem", func(c fiber.Ctx) error {
-		totalPages, currentPage, offset, numProblemsInPage := determineProblemPaginationParams(c)
-		problems := problem.ProblemSlice[offset : offset+numProblemsInPage]
+		totalPages, currentPage, searchParams, problems := determineProblemPaginationParams(c)
 		return RenderComponent(c, views.ProblemListFragment(
 			problems,
 			currentPage,
 			totalPages,
+			searchParams,
 			strings.TrimPrefix(string(c.Request().URI().Path()), "/fragment"),
 		))
 	})
@@ -99,19 +100,50 @@ func Init() *fiber.App {
 	return app
 }
 
-func determineProblemPaginationParams(c fiber.Ctx) (int, int, int, int) {
-	totalPages := len(problem.ProblemSlice) / MAX_PROBLEMS_PER_PAGE
-	if len(problem.ProblemSlice)%MAX_PROBLEMS_PER_PAGE != 0 {
+func determineProblemPaginationParams(c fiber.Ctx) (int, int, *search.Params, []*problem.Problem) {
+	query := strings.ToLower(strings.Trim(c.Query("q"), " "))
+	difficulty := strings.Trim(c.Query("difficulty"), " ")
+	difficultiesSet := make(map[string]struct{})
+
+	if len(difficulty) > 0 {
+		for _, d := range strings.Split(difficulty, ",") {
+			difficultiesSet[d] = struct{}{}
+		}
+	}
+
+	filteredProblems := make([]*problem.Problem, 0)
+	if len(query) > 0 || len(difficultiesSet) > 0 {
+		for _, problem := range problem.ProblemSlice {
+			if len(difficultiesSet) != 0 {
+				_, ok := difficultiesSet[problem.Difficulty]
+				if !ok {
+					continue
+				}
+			}
+			if len(query) == 0 || strings.Contains(strings.ToLower(problem.Title), query) {
+				filteredProblems = append(filteredProblems, problem)
+			}
+		}
+	} else {
+		filteredProblems = problem.ProblemSlice
+	}
+
+	totalPages := len(filteredProblems) / MAX_PROBLEMS_PER_PAGE
+	if len(filteredProblems)%MAX_PROBLEMS_PER_PAGE != 0 {
 		totalPages++
 	}
 	currentPage, err := strconv.Atoi(c.Query("p"))
 	if err != nil || currentPage < 0 {
 		currentPage = 0
-	} else if currentPage >= totalPages {
+	} else if currentPage >= totalPages && totalPages > 0 {
 		currentPage = totalPages - 1
 	}
 	offset := currentPage * MAX_PROBLEMS_PER_PAGE
 	numProblemsInPage := min(MAX_PROBLEMS_PER_PAGE,
-		len(problem.ProblemSlice)-offset)
-	return totalPages, currentPage, offset, numProblemsInPage
+		len(filteredProblems)-offset)
+	problems := filteredProblems[offset : offset+numProblemsInPage]
+	return totalPages, currentPage, &search.Params{
+		Query:      query,
+		Difficulty: difficulty,
+	}, problems
 }
