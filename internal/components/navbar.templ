@@ -15,11 +15,18 @@ templ Navbar() {
 			hx-push-url="/"
 		>Home</button>
 		<button
-			class="m-1 mr-2"
+			class="m-1"
 			hx-get="/fragment/about"
 			hx-target="#page-content"
 			hx-swap="innerHTML"
 			hx-push-url="/about"
 		>About</button>
+		<button
+			class="m-1 mr-2"
+			hx-get="/fragment/problem"
+			hx-target="#page-content"
+			hx-swap="innerHTML"
+			hx-push-url="/problem"
+		>Problems</button>
 	</nav>
 }

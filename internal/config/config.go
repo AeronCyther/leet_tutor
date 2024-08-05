@@ -8,8 +8,9 @@ import (
 )
 
 type LeetConfig struct {
-	Port int    `validate:"required"`
-	Env  string `validate:"oneof=dev prod"`
+	Port              int    `validate:"required"`
+	Env               string `validate:"oneof=dev prod"`
+	ProblemsDirectory string `validate:"required,dirpath"`
 }
 
 var conf *LeetConfig
@@ -22,6 +23,11 @@ func GetOrInitConfig() *LeetConfig {
 		}
 
 		err = viper.BindEnv("env")
+		if err != nil {
+			log.Fatalf("unable to bind env \"env\",\n%v", err)
+		}
+
+		err = viper.BindEnv("ProblemsDirectory", "PROBLEMS_DIRECTORY")
 		if err != nil {
 			log.Fatalf("unable to bind env \"env\",\n%v", err)
 		}

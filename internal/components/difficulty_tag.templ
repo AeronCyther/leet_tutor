@@ -1,0 +1,17 @@
+package components
+
+templ DifficultyTag(difficulty string) {
+	<span
+		class={
+			"border-2",
+			"rounded-full",
+			templ.KV("bg-green-100/75 border-green-900 text-green-900", difficulty == "Easy"),
+			templ.KV("bg-yellow-100/75 border-yellow-900 text-yellow-900", difficulty == "Medium"),
+			templ.KV("bg-red-100/75 border-red-900 text-red-900", difficulty == "Hard"),
+		}
+	>
+		<span class="mx-1">
+			{ difficulty }
+		</span>
+	</span>
+}

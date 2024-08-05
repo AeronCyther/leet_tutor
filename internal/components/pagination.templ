@@ -1,0 +1,52 @@
+package components
+
+import "strconv"
+
+func generatePageRange(currentPage int, totalPages int) []int {
+	start := max(0, currentPage-2)
+	end := min(totalPages-1, currentPage+2)
+	diff := end - start
+	start = max(0, start-4+diff)
+	end = min(totalPages-1, end+(4-end+start))
+	pageRange := make([]int, end-start+1)
+	for i := 0; i < len(pageRange); i++ {
+		pageRange[i] = start + i
+	}
+	return pageRange
+}
+
+templ Pagination(currentPage int, totalPages int, baseUrl string) {
+	<div class="flex w-full justify-center gap-1 mt-1">
+		if currentPage > 0 {
+			<a
+				class="cursor-pointer"
+				hx-get={ string(templ.URL("/fragment" + baseUrl + "?p=0")) }
+				hx-target="#page-content"
+				hx-swap="innerHTML"
+				hx-push-url={ string(templ.URL(baseUrl + "?p=0")) }
+			>First</a>
+		}
+		for _, i := range generatePageRange(currentPage, totalPages) {
+			<a
+				class={ "cursor-pointer", templ.KV("underline", i == currentPage) }
+				hx-get={ string(templ.URL("/fragment" + baseUrl + "?p=" + strconv.Itoa(i))) }
+				hx-target="#page-content"
+				hx-swap="innerHTML"
+				hx-push-url={ string(templ.URL(baseUrl + "?p=" + strconv.Itoa(i))) }
+			>
+				{ 
+    strconv.Itoa(i + 1) }
+			</a>
+		}
+		if (currentPage < totalPages - 1) {
+			<a
+				class="cursor-pointer"
+				hx-get={ string(templ.URL("/fragment" + baseUrl + "?p=" + strconv.Itoa(totalPages-1))) }
+				hx-target="#page-content"
+				hx-swap="innerHTML"
+				hx-push-url={ string(templ.URL(baseUrl + "?p=" +
+    strconv.Itoa(totalPages-1))) }
+			>Last</a>
+		}
+	</div>
+}

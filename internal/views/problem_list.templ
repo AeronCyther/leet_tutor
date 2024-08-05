@@ -1,0 +1,42 @@
+package views
+
+import (
+	"github.com/AeronCyther/leet_tutor/internal/components"
+	"github.com/AeronCyther/leet_tutor/internal/problem"
+	"strconv"
+)
+
+templ ProblemList(problems []*problem.Problem, currentPage int, totalPages int, baseUrl string) {
+	@base() {
+		@ProblemListFragment(problems, currentPage, totalPages, baseUrl)
+	}
+}
+
+templ ProblemListFragment(problems []*problem.Problem, currentPage int, totalPages int, baseUrl string) {
+	<h1 class="text-2xl mb-1">Page { strconv.Itoa(currentPage + 1) } of { strconv.Itoa(totalPages) }</h1>
+	<div class="flex flex-col gap-1">
+		for _, p := range problems {
+			<a
+				class="cursor-pointer"
+				hx-get={ string(templ.URL("/fragment" + baseUrl + "/" + p.ID)) }
+				hx-target="#page-content"
+				hx-swap="innerHTML"
+				hx-push-url={ string(templ.URL(baseUrl + "/" + p.ID)) }
+			>
+				@components.Card() {
+					<h1 class="text-2xl mb-[0.5rem]">{ p.Title }</h1>
+					@components.DifficultyTag(p.Difficulty)
+					<div class="mt-1 max-h-5 overflow-hidden relative">
+						for _, content := range p.Body.Content {
+							<p>
+								{ content }
+							</p>
+						}
+						<div class="bg-gradient-to-t from-slate-50 to-transparent to-80% w-full h-full absolute block top-[0]"></div>
+					</div>
+				}
+			</a>
+		}
+	</div>
+	@components.Pagination(currentPage, totalPages, baseUrl)
+}
