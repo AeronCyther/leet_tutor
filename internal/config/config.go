@@ -44,6 +44,5 @@ func GetOrInitConfig() *LeetConfig {
 		}
 
 	}
-	log.Println(conf)
 	return conf
 }
