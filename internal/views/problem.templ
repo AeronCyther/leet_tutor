@@ -3,8 +3,8 @@ package views
 import (
 	"github.com/AeronCyther/leet_tutor/internal/components"
 	"github.com/AeronCyther/leet_tutor/internal/problem"
+	"github.com/AeronCyther/leet_tutor/internal/utils"
 	"strconv"
-	"strings"
 )
 
 templ Problem(p *problem.Problem) {
@@ -18,36 +18,30 @@ templ ProblemFragment(p *problem.Problem) {
 		<h1 class="text-2xl mb-1">{ p.Title }</h1>
 		@components.DifficultyTag(p.Difficulty)
 		<div class="mt-1">
-			for _, content := range p.Body.Content {
-				<p class="">{ content }</p>
-			}
+			@utils.RenderMarkdown(p.Body.Content)
 		</div>
 		for i, example := range p.Body.Examples {
 			<div class="outline outline-2 rounded-sm outline-sky-600 mt-2">
 				<div class="p-1 relative">
 					<h2 class="text-xl absolute text-sky-600 top-[-1rem] bg-slate-50 px-[0.25rem]">Example-{ strconv.Itoa(i) }</h2>
 					<h3 class="text-lg">Input</h3>
-					<p>{ strings.Join(example.Inputs, "\n") }</p>
+					@utils.RenderMarkdown(example.Inputs)
 					<h3 class="text-lg mt-[0.5rem]">Output</h3>
-					<p>{ strings.Join(example.Outputs, "\n") }</p>
+					@utils.RenderMarkdown(example.Outputs)
 					if len(example.Explanation) > 0 {
 						<h3 class="text-lg mt-[0.5rem]">Explanation</h3>
-						<p>{ strings.Join(example.Explanation, "\n") }</p>
+						@utils.RenderMarkdown(example.Explanation)
 					}
 				</div>
 			</div>
 		}
 		if len(p.Body.Constraints) > 0 {
 			<h2 class="text-xl mt-1">Constraints</h2>
-			for _, constraint := range p.Body.Constraints {
-				<p>{ constraint }</p>
-			}
+			@utils.RenderMarkdown(p.Body.Constraints)
 		}
 		if len(p.Body.FollowUp) > 0 {
 			<h2 class="text-xl mt-1">Follow Up</h2>
-			for _, followUp := range p.Body.FollowUp {
-				<p>{ followUp }</p>
-			}
+			@utils.RenderMarkdown(p.Body.FollowUp)
 		}
 	}
 }

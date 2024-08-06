@@ -4,6 +4,7 @@ import (
 	"github.com/AeronCyther/leet_tutor/internal/components"
 	"github.com/AeronCyther/leet_tutor/internal/problem"
 	"github.com/AeronCyther/leet_tutor/internal/search"
+	"github.com/AeronCyther/leet_tutor/internal/utils"
 	"strconv"
 	"strings"
 )
@@ -104,11 +105,7 @@ templ ProblemListFragment(problems []*problem.Problem, currentPage int, totalPag
 						<h1 class="text-2xl mb-[0.5rem]">{ p.Title }</h1>
 						@components.DifficultyTag(p.Difficulty)
 						<div class="mt-1 max-h-5 overflow-hidden relative">
-							for _, content := range p.Body.Content {
-								<p>
-									{ content }
-								</p>
-							}
+							@utils.RenderMarkdown(p.Body.Content)
 							<div class="bg-gradient-to-t from-slate-50 to-transparent to-80% w-full h-full absolute block top-[0]"></div>
 						</div>
 					}
