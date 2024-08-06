@@ -23,7 +23,7 @@ templ ProblemFragment(p *problem.Problem) {
 		for i, example := range p.Body.Examples {
 			<div class="outline outline-2 rounded-sm outline-sky-600 mt-2">
 				<div class="p-1 relative">
-					<h2 class="text-xl absolute text-sky-600 top-[-1rem] bg-slate-50 px-[0.25rem]">Example-{ strconv.Itoa(i) }</h2>
+					<h2 class="text-xl absolute text-sky-600 top-[-1rem] bg-slate-50 px-[0.25rem]">Example-{ strconv.Itoa(i + 1) }</h2>
 					<h3 class="text-lg">Input</h3>
 					@utils.RenderMarkdown(example.Inputs)
 					<h3 class="text-lg mt-[0.5rem]">Output</h3>
