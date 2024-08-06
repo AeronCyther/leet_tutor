@@ -36,7 +36,7 @@ type Problem struct {
 }
 
 func InitProblemMap() {
-	ProblemsDirectoryPath := config.GetOrInitConfig().ProblemsDirectory
+	ProblemsDirectoryPath := config.Config.ProblemsDirectory
 	ProblemsDirectory, err := os.ReadDir(ProblemsDirectoryPath)
 	if err != nil {
 		log.Fatal("Could not read the problems directory")

@@ -10,6 +10,5 @@ import (
 
 func main() {
 	app := app.Init()
-	conf := config.GetOrInitConfig()
-	log.Fatal(app.Listen(fmt.Sprintf(":%d", conf.Port)))
+	log.Fatal(app.Listen(fmt.Sprintf(":%d", config.Config.Port)))
 }

@@ -13,36 +13,33 @@ type LeetConfig struct {
 	ProblemsDirectory string `validate:"required,dirpath"`
 }
 
-var conf *LeetConfig
+var Config *LeetConfig
 
-func GetOrInitConfig() *LeetConfig {
-	if conf == nil {
-		err := viper.BindEnv("port")
-		if err != nil {
-			log.Fatalf("unable to bind env \"port\",\n%v", err)
-		}
-
-		err = viper.BindEnv("env")
-		if err != nil {
-			log.Fatalf("unable to bind env \"env\",\n%v", err)
-		}
-
-		err = viper.BindEnv("ProblemsDirectory", "PROBLEMS_DIRECTORY")
-		if err != nil {
-			log.Fatalf("unable to bind env \"env\",\n%v", err)
-		}
-
-		err = viper.Unmarshal(&conf)
-		if err != nil {
-			log.Fatalf("unable to decode into struct,\n%v", err)
-		}
-
-		validate := validator.New(validator.WithRequiredStructEnabled())
-		err = validate.Struct(conf)
-		if err != nil {
-			log.Fatalf("unable to validate config,\n%v", err)
-		}
-
+func InitConfig() {
+	Config = &LeetConfig{}
+	err := viper.BindEnv("port")
+	if err != nil {
+		log.Fatalf("unable to bind env \"port\",\n%v", err)
 	}
-	return conf
+
+	err = viper.BindEnv("env")
+	if err != nil {
+		log.Fatalf("unable to bind env \"env\",\n%v", err)
+	}
+
+	err = viper.BindEnv("ProblemsDirectory", "PROBLEMS_DIRECTORY")
+	if err != nil {
+		log.Fatalf("unable to bind env \"env\",\n%v", err)
+	}
+
+	err = viper.Unmarshal(&Config)
+	if err != nil {
+		log.Fatalf("unable to decode into struct,\n%v", err)
+	}
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	err = validate.Struct(Config)
+	if err != nil {
+		log.Fatalf("unable to validate config,\n%v", err)
+	}
 }

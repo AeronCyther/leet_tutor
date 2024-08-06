@@ -18,10 +18,10 @@ const MAX_PROBLEMS_PER_PAGE = 10
 func Init() *fiber.App {
 	app := fiber.New()
 
-	conf := config.GetOrInitConfig()
+	config.InitConfig()
 	problem.InitProblemMap()
 
-	if conf.Env == "dev" {
+	if config.Config.Env == "dev" {
 		sess_id, err := uuid.NewUUID()
 		if err != nil {
 			log.Fatal("Error generating session ID")
