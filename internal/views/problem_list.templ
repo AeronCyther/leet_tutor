@@ -31,7 +31,7 @@ templ ProblemListFragment(problems []*problem.Problem, currentPage int, totalPag
 					if len(searchParams.Difficulty) > 0 {
 						{ searchParams.Difficulty }
 					} else {
-						None
+						All
 					}
 				</label>
 				@components.DropdownIcon()
@@ -173,9 +173,7 @@ templ ProblemListFragment(problems []*problem.Problem, currentPage int, totalPag
         const selectedDifficulties = createSelectedDifficultyArray();
         let difficultyString = selectedDifficulties.join(",");
 
-        if (selectedDifficulties.length == 0){
-            difficultyString = "None";
-        }else if (selectedDifficulties.length == 3){
+        if (selectedDifficulties.length == 0 || selectedDifficulties.length == 3){
             difficultyString = "All";
         }
         document.getElementById("selected-difficulties").innerText=difficultyString;
