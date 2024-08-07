@@ -73,8 +73,8 @@ func Init() *fiber.App {
 
 	app.Get("/problem/:id", func(c fiber.Ctx) error {
 		id := c.Params("id")
-		if _, ok := problem.ProblemMap[id]; ok {
-			return RenderComponent(c, views.Problem(problem.ProblemMap[id]))
+		if p, ok := problem.ProblemMap[id]; ok {
+			return RenderComponent(c, views.Problem(p))
 		} else {
 			err := RenderComponent(c, views.NotFound())
 			if err != nil {
@@ -86,8 +86,8 @@ func Init() *fiber.App {
 
 	app.Get("fragment/problem/:id", func(c fiber.Ctx) error {
 		id := c.Params("id")
-		if _, ok := problem.ProblemMap[id]; ok {
-			return RenderComponent(c, views.ProblemFragment(problem.ProblemMap[id]))
+		if p, ok := problem.ProblemMap[id]; ok {
+			return RenderComponent(c, views.ProblemFragment(p))
 		} else {
 			err := RenderComponent(c, views.NotFound())
 			if err != nil {
