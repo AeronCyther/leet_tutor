@@ -5,7 +5,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/AeronCyther/leet_tutor/internal/components"
 	"github.com/AeronCyther/leet_tutor/internal/config"
+	"github.com/AeronCyther/leet_tutor/internal/llm"
 	"github.com/AeronCyther/leet_tutor/internal/problem"
 	"github.com/AeronCyther/leet_tutor/internal/search"
 	"github.com/AeronCyther/leet_tutor/internal/views"
@@ -20,6 +22,7 @@ func Init() *fiber.App {
 
 	config.InitConfig()
 	problem.InitProblemMap()
+	llm.InitLLMAgent()
 
 	if config.Config.Env == "dev" {
 		sess_id, err := uuid.NewUUID()
@@ -97,6 +100,25 @@ func Init() *fiber.App {
 		}
 	})
 
+	app.Get("fragment/problem/:id/explain/content", func(c fiber.Ctx) error {
+		id := c.Params("id")
+		if p, ok := problem.ProblemMap[id]; ok {
+			explanation, err := llm.ExplainProblemContent(p)
+			if err != nil {
+				log.Printf("Error: %e", err)
+				return RenderComponent(c, components.AIErrorContent(string(c.Request().URI().Path())))
+			}
+
+			return RenderComponent(c, components.AIGeneratedContent(explanation, string(c.Request().URI().Path())))
+
+		} else {
+			err := RenderComponent(c, views.NotFound())
+			if err != nil {
+				return err
+			}
+			return c.SendStatus(404)
+		}
+	})
 	return app
 }
 

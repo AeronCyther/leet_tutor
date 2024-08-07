@@ -1,6 +1,7 @@
 package views
 
 import (
+	"fmt"
 	"github.com/AeronCyther/leet_tutor/internal/components"
 	"github.com/AeronCyther/leet_tutor/internal/problem"
 	"github.com/AeronCyther/leet_tutor/internal/utils"
@@ -17,8 +18,14 @@ templ ProblemFragment(p *problem.Problem) {
 	@components.Card() {
 		<h1 class="text-2xl mb-1">{ p.Title }</h1>
 		@components.DifficultyTag(p.Difficulty)
-		<div class="mt-1">
+		<div id="problem-content" class="relative mt-1">
 			@utils.RenderMarkdown(p.Body.Content)
+			<button
+				id="problem-content-help"
+				class="mt-[0.5rem] rounded-md hover:text-sky-500 text-sky-600 focus:outline-none"
+				hx-get={ fmt.Sprintf("/fragment/problem/%s/explain/content", p.ID) }
+				hx-swap="outerHTML"
+			>Explain</button>
 		</div>
 		for i, example := range p.Body.Examples {
 			<div class="outline outline-2 rounded-sm outline-sky-600 mt-2">

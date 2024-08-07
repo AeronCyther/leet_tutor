@@ -1,0 +1,17 @@
+package components
+
+templ AIErrorContent(retryURL string) {
+	<div class="ai-generated-content outline outline-dashed outline-2 rounded-sm outline-red-600 mt-2">
+		<div class="p-1 relative">
+			<h3 class="text-md absolute text-red-600 top-[-1rem] bg-slate-50 px-[0.25rem]">Error</h3>
+			<p>Something unexpected happened.</p>
+			<button
+				id="problem-content-help"
+				class="mt-[0.5rem] rounded-md hover:text-red-500 text-red-600 focus:outline-none"
+				hx-get={ retryURL }
+				hx-swap="outerHTML"
+				hx-target="closest .ai-generated-content"
+			>Retry</button>
+		</div>
+	</div>
+}
