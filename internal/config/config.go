@@ -29,7 +29,7 @@ func InitConfig() {
 
 	err = viper.BindEnv("ProblemsDirectory", "PROBLEMS_DIRECTORY")
 	if err != nil {
-		log.Fatalf("unable to bind env \"env\",\n%v", err)
+		log.Fatalf("unable to bind env \"PROBLEMS_DIRECTORY\",\n%v", err)
 	}
 
 	err = viper.Unmarshal(&Config)
