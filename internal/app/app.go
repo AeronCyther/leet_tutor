@@ -119,6 +119,32 @@ func Init() *fiber.App {
 			return c.SendStatus(404)
 		}
 	})
+
+	app.Get("fragment/problem/:id/explain/example/:exampleIndex", func(c fiber.Ctx) error {
+		id := c.Params("id")
+		exampleIndex, err := strconv.Atoi(c.Params("exampleIndex"))
+		if err != nil {
+			return err
+		}
+
+		if p, ok := problem.ProblemMap[id]; ok && exampleIndex < len(p.Body.Examples) && exampleIndex >= 0 {
+			explanation, err := llm.ExplainProblemExample(p, exampleIndex)
+			if err != nil {
+				log.Printf("Error: %e", err)
+				return RenderComponent(c, components.AIErrorContent(string(c.Request().URI().Path())))
+			}
+
+			return RenderComponent(c, components.AIGeneratedContent(explanation, string(c.Request().URI().Path())))
+
+		} else {
+			err := RenderComponent(c, views.NotFound())
+			if err != nil {
+				return err
+			}
+			return c.SendStatus(404)
+		}
+	})
+
 	return app
 }
 

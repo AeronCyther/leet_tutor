@@ -38,6 +38,12 @@ templ ProblemFragment(p *problem.Problem) {
 					if len(example.Explanation) > 0 {
 						<h3 class="text-lg mt-[0.5rem]">Explanation</h3>
 						@utils.RenderMarkdown(example.Explanation)
+					} else {
+						<button
+							class="mt-[0.5rem] rounded-md hover:text-sky-500 text-sky-600 focus:outline-none"
+							hx-get={ fmt.Sprintf("/fragment/problem/%s/explain/example/%d", p.ID, i) }
+							hx-swap="outerHTML"
+						>Explain</button>
 					}
 				</div>
 			</div>
